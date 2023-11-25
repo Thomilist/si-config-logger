@@ -21,6 +21,7 @@
 
 #include "OcrField.hpp"
 #include "Screenshot.hpp"
+#include "Settings.hpp"
 
 namespace scl
 {
@@ -46,6 +47,8 @@ namespace scl
             void createFields();
             void createControls();
             void createHistory();
+
+            Settings settings;
 
             QWidget central_widget;
             QHBoxLayout main_layout;

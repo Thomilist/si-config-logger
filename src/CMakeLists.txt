@@ -8,6 +8,7 @@ target_link_libraries(
     Qt::Widgets
     OcrField
     Screenshot
+    Settings
 )
 
 add_library(OcrField OcrField.cpp)
@@ -27,6 +28,12 @@ target_link_libraries(
 add_library(Screenshot Screenshot.cpp)
 target_link_libraries(
     Screenshot PRIVATE
+    Qt::Widgets
+)
+
+add_library(Settings Settings.cpp)
+target_link_libraries(
+    Settings PRIVATE
     Qt::Widgets
 )
 

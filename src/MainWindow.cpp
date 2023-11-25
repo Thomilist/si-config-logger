@@ -4,6 +4,7 @@
 namespace scl
 {
     MainWindow::MainWindow()
+        : settings(this)
     {
         addAction(&activate);
         activate.setShortcut(QKeySequence{"Ctrl+Space"});
