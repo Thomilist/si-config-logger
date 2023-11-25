@@ -30,7 +30,19 @@ if (NOT Tesseract_FOUND)
 
     pkg_check_modules(Tesseract REQUIRED IMPORTED_TARGET tesseract lept)
     add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
-endif ()
+endif()
+
+set(ORIGIN_YEAR "2023")
+string(TIMESTAMP CURRENT_YEAR "%Y")
+string(COMPARE EQUAL ${ORIGIN_YEAR} ${CURRENT_YEAR} YEARS_EQUAL)
+
+if(YEARS_EQUAL)
+    set(PROJECT_YEAR_RANGE ${ORIGIN_YEAR})
+else()
+    string(CONCAT PROJECT_YEAR_RANGE ${ORIGIN_YEAR} "-" ${CURRENT_YEAR})
+endif()
+
+configure_file(src/configure-files/LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
 
 add_subdirectory(src)
 target_link_libraries(
