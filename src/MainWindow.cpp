@@ -82,7 +82,22 @@ namespace scl
     
     void MainWindow::onClear()
     {
-        history_table_model.clearData();
+        QMessageBox::StandardButton response = QMessageBox::No;
+
+        response = QMessageBox::warning
+        (
+            this,
+            "Clear log",
+            "Are you sure you wish to clear the log? This cannot be undone.",
+            QMessageBox::Yes | QMessageBox::No,
+            QMessageBox::No
+        );
+
+        if (response == QMessageBox::Yes)
+        {
+            history_table_model.clearData();
+        }
+        
         return;
     }
     
@@ -215,7 +230,7 @@ namespace scl
         activate_button.setText("Scan\n(Ctrl + Space)");
         accept_button.setText("Accept\n(Ctrl + Enter)");
         save_button.setText("Save to file");
-        clear_button.setText("Clear data");
+        clear_button.setText("Clear log");
 
         for (auto* button : {&activate_button, &accept_button, &save_button, &clear_button})
         {

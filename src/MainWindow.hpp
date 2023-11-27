@@ -12,6 +12,7 @@
 #include <QKeySequence>
 #include <QLabel>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QSpinBox>
