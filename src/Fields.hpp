@@ -1,8 +1,9 @@
+// Every field is defined here. Labels must be unique
 // label, bounding box, unit, regex whitelist filter, replacements
 // QString, QRect, QString, QString, std::vector<std::pair<QString, QString>>
 {
     "Model",
-    {107, 279, 100, 31},
+    {107, 279, 100, 53},
     "",
     "[0-9a-zA-Z-+:,.\\s]",
     {}

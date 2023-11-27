@@ -15,7 +15,6 @@ namespace scl
         }
 
         tess_api->SetImage(pix);
-        tess_api->SetPageSegMode(tesseract::PageSegMode::PSM_SINGLE_LINE);
         tess_api->Recognize(nullptr);
     }
     

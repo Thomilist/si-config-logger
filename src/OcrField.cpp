@@ -24,6 +24,8 @@ namespace scl
         source_image.setAlignment(Qt::AlignCenter);
         source_image.setMinimumWidth(250);
 
+        replacements.push_back({"\n", " "});
+
         connect(this, &OcrField::execute, &worker, &OcrWorker::onExecute);
         connect(&worker, &OcrWorker::finished, this, &OcrField::onFinished);
 
