@@ -32,8 +32,10 @@ namespace scl
                 const QString& a_regex_filter,
                 const std::vector<std::pair<QString, QString>> a_replacements,
                 QObject* a_parent);
+            OcrField();
             ~OcrField();
 
+            const QString& getName() const;
             QLabel* getLabel();
             QLineEdit* getValueEdit();
             QLabel* getUnitLabel();
@@ -62,6 +64,7 @@ namespace scl
             std::vector<std::pair<QString, QString>> replacements;
             QRect bounding_box;
 
+            QString name;
             QLabel label;
             QLineEdit value;
             QLabel unit;

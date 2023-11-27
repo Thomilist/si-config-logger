@@ -1,3 +1,18 @@
+add_library(DeviceData DeviceData.cpp)
+target_link_libraries(
+    DeviceData PRIVATE
+    Qt::Widgets
+    OcrField
+)
+
+add_library(HistoryTableModel HistoryTableModel.cpp)
+target_link_libraries(
+    HistoryTableModel PRIVATE
+    Qt::Widgets
+    DeviceData
+    OcrField
+)
+
 set_source_files_properties(
     MainWindow.cpp OBJECT_DEPENDS
     ${CMAKE_CURRENT_SOURCE_DIR}/Fields.hpp
@@ -6,6 +21,8 @@ add_library(MainWindow MainWindow.cpp)
 target_link_libraries(
     MainWindow PRIVATE
     Qt::Widgets
+    DeviceData
+    HistoryTableModel
     OcrField
     Screenshot
     Settings

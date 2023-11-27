@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <vector>
 
 #include <QAction>
@@ -11,14 +12,18 @@
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
+#include <QSizePolicy>
 #include <QString>
 #include <QStringBuilder>
+#include <QTableView>
 #include <QThread>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "ForwardDeclarations.hpp"
 
+#include "DeviceData.hpp"
+#include "HistoryTableModel.hpp"
 #include "OcrField.hpp"
 #include "Screenshot.hpp"
 #include "Settings.hpp"
@@ -37,6 +42,7 @@ namespace scl
             void onActivate();
             void onAccept();
             void onSave();
+            void onClear();
             void onFieldFinished();
         
         signals:
@@ -56,6 +62,7 @@ namespace scl
             QAction activate;
             QAction accept;
             QAction save;
+            QAction clearData;
 
             QGroupBox instruction_group;
             QGridLayout instruction_layout;
@@ -63,7 +70,7 @@ namespace scl
 
             QGroupBox field_group;
             QGridLayout field_layout;
-            std::vector<OcrField*> fields;
+            std::vector<std::unique_ptr<OcrField>> fields;
 
             QLabel property_header{"Property"};
             QLabel value_header{"Value"};
@@ -76,8 +83,12 @@ namespace scl
             QPushButton activate_button;
             QPushButton accept_button;
             QPushButton save_button;
+            QPushButton clear_button;
 
             QGroupBox history_group;
             QGridLayout history_layout;
+            std::vector<DeviceData> history_data;
+            HistoryTableModel history_table_model;
+            QTableView history_table_view;
     };
 }

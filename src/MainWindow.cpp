@@ -5,6 +5,7 @@ namespace scl
 {
     MainWindow::MainWindow()
         : settings(this)
+        , history_table_model(&fields, &history_data, this)
     {
         addAction(&activate);
         activate.setShortcut(QKeySequence{"Ctrl+Space"});
@@ -17,10 +18,21 @@ namespace scl
         addAction(&save);
         connect(&save, &QAction::triggered, this, &MainWindow::onSave);
 
+        addAction(&clearData);
+        connect(&clearData, &QAction::triggered, this, &MainWindow::onClear);
+
+        history_table_view.setModel(&history_table_model);
+        connect(&history_table_model, &QAbstractTableModel::dataChanged, &history_table_view, &QTableView::resizeColumnsToContents);
+
         createInstruction();
         createFields();
         createControls();
         createHistory();
+
+        instruction_group.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        field_group.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        control_group.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+        history_group.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
         layout_columns.at(0).addWidget(&instruction_group);
         layout_columns.at(0).addWidget(&field_group);
@@ -40,28 +52,29 @@ namespace scl
     }
     
     MainWindow::~MainWindow()
-    {
-        for (auto field : fields)
-        {
-            delete field;
-        }
-    }
+    { }
     
     void MainWindow::onActivate()
     {
         emit execute(screenshot());
-
         return;
     }
     
     void MainWindow::onAccept()
     {
-        
+        history_table_model.addData(fields);
+        return;
     }
     
     void MainWindow::onSave()
     {
         
+    }
+    
+    void MainWindow::onClear()
+    {
+        history_table_model.clearData();
+        return;
     }
     
     void MainWindow::onFieldFinished()
@@ -135,8 +148,7 @@ namespace scl
 
         for (auto& [name, bounding_box, unit, regex, replacements] : args)
         {
-            auto field = new OcrField{name, bounding_box, unit, regex, replacements, this};
-            fields.push_back(field);
+            auto field = std::make_unique<OcrField>(name, bounding_box, unit, regex, replacements, this);
 
             column = 0;
 
@@ -148,8 +160,10 @@ namespace scl
             
             field_layout.setRowMinimumHeight(row++, 40);
 
-            connect(this, &MainWindow::execute, field, &OcrField::onExecute);
-            connect(field, &OcrField::finished, this, &MainWindow::onFieldFinished);
+            connect(this, &MainWindow::execute, field.get(), &OcrField::onExecute);
+            connect(field.get(), &OcrField::finished, this, &MainWindow::onFieldFinished);
+            
+            history_table_model.addField(field);
         }
 
         field_group.setLayout(&field_layout);
@@ -169,14 +183,16 @@ namespace scl
         connect(&activate_button, &QPushButton::clicked, &activate, &QAction::trigger);
         connect(&accept_button, &QPushButton::clicked, &accept, &QAction::trigger);
         connect(&save_button, &QPushButton::clicked, &save, &QAction::trigger);
+        connect(&clear_button, &QPushButton::clicked, &clearData, &QAction::trigger);
 
         activate_button.setText("Scan\n(Ctrl + Space)");
         accept_button.setText("Accept\n(Ctrl + Enter)");
         save_button.setText("Save to file");
+        clear_button.setText("Clear data");
 
         int column = 0;
 
-        for (auto* button : {&activate_button, &accept_button, &save_button})
+        for (auto* button : {&activate_button, &accept_button, &save_button, &clear_button})
         {
             control_layout.addWidget(button, 0, column++);
             button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -196,8 +212,9 @@ namespace scl
             return;
         }
 
+        history_table_view.setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
-
+        history_layout.addWidget(&history_table_view, 0, 0);
 
         history_group.setLayout(&history_layout);
         done = true;

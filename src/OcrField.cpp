@@ -16,11 +16,13 @@ namespace scl
         , regex_filter(a_regex_filter)
         , replacements(a_replacements)
         , bounding_box(a_bounding_box)
+        , name(a_label)
         , label(a_label % ":")
         , unit(a_unit)
     {
         value.setAlignment(Qt::AlignRight);
-        value.setMinimumWidth(100);
+        value.setMinimumWidth(150);
+        value.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
         source_image.setAlignment(Qt::AlignCenter);
         source_image.setMinimumWidth(250);
 
@@ -33,10 +35,18 @@ namespace scl
         worker_thread.start();
     }
     
+    OcrField::OcrField()
+    { }
+    
     OcrField::~OcrField()
     {
         worker_thread.quit();
         worker_thread.wait();
+    }
+    
+    const QString& OcrField::getName() const
+    {
+        return name;
     }
     
     QLabel* OcrField::getLabel()
