@@ -12,7 +12,7 @@ namespace scl
         connect(&activate, &QAction::triggered, this, &MainWindow::onActivate);
 
         addAction(&accept);
-        accept.setShortcut(QKeySequence{"Ctrl+Enter"});
+        accept.setShortcuts({QKeySequence{"Ctrl+Enter"}, QKeySequence{"Ctrl+Return"}});
         connect(&accept, &QAction::triggered, this, &MainWindow::onAccept);
 
         addAction(&save);
@@ -45,8 +45,12 @@ namespace scl
             main_layout.addLayout(&layout);
         }
 
+        main_layout.setStretchFactor(&layout_columns.at(1), 1);
+
         setCentralWidget(&central_widget);
         central_widget.setLayout(&main_layout);
+
+        settings.emitState();
 
         show();
     }
@@ -56,6 +60,11 @@ namespace scl
     
     void MainWindow::onActivate()
     {
+        activate_button.setEnabled(false);
+        activate.setEnabled(false);
+        accept_button.setEnabled(false);
+        accept.setEnabled(false);
+        finished_fields = 0;
         emit execute(screenshot());
         return;
     }
@@ -79,7 +88,22 @@ namespace scl
     
     void MainWindow::onFieldFinished()
     {
-        
+        if (++finished_fields < fields.size())
+        {
+            return;
+        }
+
+        activate_button.setEnabled(true);
+        activate.setEnabled(true);
+        accept_button.setEnabled(true);
+        accept.setEnabled(true);
+
+        if (settings.getAutoAccept())
+        {
+            accept.trigger();
+        }
+
+        return;
     }
     
     void MainWindow::createInstruction()
@@ -162,6 +186,7 @@ namespace scl
 
             connect(this, &MainWindow::execute, field.get(), &OcrField::onExecute);
             connect(field.get(), &OcrField::finished, this, &MainWindow::onFieldFinished);
+            connect(&settings, &Settings::confidenceThresholdChanged, field.get(), &OcrField::onConfidenceThresholdChanged);
             
             history_table_model.addField(field);
         }
@@ -180,6 +205,8 @@ namespace scl
             return;
         }
 
+        // Buttons
+
         connect(&activate_button, &QPushButton::clicked, &activate, &QAction::trigger);
         connect(&accept_button, &QPushButton::clicked, &accept, &QAction::trigger);
         connect(&save_button, &QPushButton::clicked, &save, &QAction::trigger);
@@ -190,13 +217,58 @@ namespace scl
         save_button.setText("Save to file");
         clear_button.setText("Clear data");
 
-        int column = 0;
-
         for (auto* button : {&activate_button, &accept_button, &save_button, &clear_button})
         {
-            control_layout.addWidget(button, 0, column++);
             button->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         }
+
+        button_layout.addWidget(&activate_button, 0, 0);
+        button_layout.addWidget(&accept_button, 1, 0);
+        button_layout.addWidget(&save_button, 0, 1);
+        button_layout.addWidget(&clear_button, 1, 1);
+
+        // Options
+
+        auto_accept_label.setText("Auto accept:");
+        show_all_label.setText("Show all:");
+        warning_threshold_label.setText("Confidence warning threshold:");
+
+        auto_accept_label.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        show_all_label.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        warning_threshold_label.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+        auto_accept_option.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        show_all_option.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        warning_threshold_option.setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
+
+        warning_threshold_option.setMinimum(0);
+        warning_threshold_option.setMaximum(100);
+        warning_threshold_option.setSuffix(" %");
+
+        auto_accept_option.setChecked(settings.getAutoAccept());
+        show_all_option.setChecked(settings.getShowAll());
+        warning_threshold_option.setValue(settings.getConfidenceThreshold());
+
+        connect(&auto_accept_option, &QCheckBox::stateChanged, &settings, &Settings::setAutoAccept);
+        connect(&show_all_option, &QCheckBox::stateChanged, &settings, &Settings::setShowAll);
+        connect(&warning_threshold_option, &QSpinBox::valueChanged, &settings, &Settings::setConfidenceThreshold);
+
+        int row = 0;
+
+        options_layout.addWidget(&auto_accept_label, row, 0);
+        options_layout.addWidget(&auto_accept_option, row++, 1, Qt::AlignRight);
+        options_layout.addWidget(&show_all_label, row, 0);
+        options_layout.addWidget(&show_all_option, row++, 1, Qt::AlignRight);
+
+        options_layout.addWidget(&warning_threshold_label, row, 0);
+        options_layout.addWidget(&warning_threshold_option, row++, 1, Qt::AlignRight);
+
+        // Overall layout
+
+        control_layout.addLayout(&button_layout, 0, 0);
+        control_layout.addLayout(&options_layout, 0, 2);
+
+        control_layout.setColumnStretch(1, 1);
 
         control_group.setLayout(&control_layout);
         done = true;

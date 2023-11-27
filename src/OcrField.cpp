@@ -76,6 +76,7 @@ namespace scl
     
     void OcrField::onExecute(const QPixmap& a_pixmap)
     {
+        has_scanned = false;
         value.setEnabled(false);
 
         value.clear();
@@ -88,8 +89,17 @@ namespace scl
         return;
     }
     
+    void OcrField::onConfidenceThresholdChanged(int a_threshold)
+    {
+        confidence_threshold = a_threshold;
+        updateConfidence();
+        return;
+    }
+    
     void OcrField::onFinished()
     {
+        has_scanned = true;
+
         updateValue();
         updateConfidence();
 
@@ -123,10 +133,16 @@ namespace scl
     
     void OcrField::updateConfidence()
     {
+        if (!has_scanned)
+        {
+            confidence.clear();
+            return;
+        }
+        
         float value = worker.getConfidence();
         QString formatted_value = QString::number(value, 'f', 1) % " %";
 
-        if (value < 60)
+        if (value < confidence_threshold)
         {
             confidence.setStyleSheet("color: maroon;");
             formatted_value = "⚠️ " % formatted_value;

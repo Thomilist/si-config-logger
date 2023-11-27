@@ -5,6 +5,7 @@
 #include <vector>
 
 #include <QAction>
+#include <QCheckBox>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -13,6 +14,7 @@
 #include <QMainWindow>
 #include <QPushButton>
 #include <QSizePolicy>
+#include <QSpinBox>
 #include <QString>
 #include <QStringBuilder>
 #include <QTableView>
@@ -71,6 +73,7 @@ namespace scl
             QGroupBox field_group;
             QGridLayout field_layout;
             std::vector<std::unique_ptr<OcrField>> fields;
+            unsigned int finished_fields;
 
             QLabel property_header{"Property"};
             QLabel value_header{"Value"};
@@ -80,10 +83,18 @@ namespace scl
 
             QGroupBox control_group;
             QGridLayout control_layout;
+            QGridLayout button_layout;
             QPushButton activate_button;
             QPushButton accept_button;
             QPushButton save_button;
             QPushButton clear_button;
+            QGridLayout options_layout;
+            QLabel auto_accept_label;
+            QCheckBox auto_accept_option;
+            QLabel show_all_label;
+            QCheckBox show_all_option;
+            QLabel warning_threshold_label;
+            QSpinBox warning_threshold_option;
 
             QGroupBox history_group;
             QGridLayout history_layout;

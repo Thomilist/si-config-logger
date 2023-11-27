@@ -44,6 +44,7 @@ namespace scl
         
         public slots:
             void onExecute(const QPixmap& a_pixmap);
+            void onConfidenceThresholdChanged(int a_threshold);
         
         private slots:
             void onFinished();
@@ -64,11 +65,14 @@ namespace scl
             std::vector<std::pair<QString, QString>> replacements;
             QRect bounding_box;
 
+            bool has_scanned = false;
+
             QString name;
             QLabel label;
             QLineEdit value;
             QLabel unit;
             QLabel source_image;
             QLabel confidence;
+            int confidence_threshold;
     };
 }
