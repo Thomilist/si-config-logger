@@ -77,7 +77,8 @@ namespace scl
     
     void MainWindow::onSave()
     {
-        
+        saveCsv();
+        return;
     }
     
     void MainWindow::onClear()
@@ -305,6 +306,56 @@ namespace scl
 
         history_group.setLayout(&history_layout);
         done = true;
+        return;
+    }
+    
+    void MainWindow::saveCsv()
+    {
+        QString file_name = QFileDialog::getSaveFileName
+        (
+            this,
+            "Save log",
+            settings.getSaveLocation(),
+            "Semicolon-separated values (*.csv)"
+        );
+
+        if (file_name.isEmpty())
+        {
+            return;
+        }
+
+        QFileInfo file_info{file_name};
+        settings.setSaveLocation(file_info.absolutePath());
+
+        QFile file{file_name};
+
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QMessageBox::warning
+            (
+                this,
+                "Save to file",
+                "Unable to write to file."
+            );
+
+            return;
+        }
+
+        QTextStream file_stream{&file};
+        QStringList headers;
+
+        for (auto iterator = fields.begin(); iterator != fields.end(); ++iterator)
+        {
+            headers.push_back((*(iterator))->getName());
+        }
+
+        file_stream << headers.join(";") % "\n";
+
+        for (const auto& entry : history_data)
+        {
+            file_stream << entry.toCsv(fields);
+        }
+
         return;
     }
 }

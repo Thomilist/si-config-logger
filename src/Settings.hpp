@@ -3,6 +3,7 @@
 #include <QByteArray>
 #include <QMainWindow>
 #include <QSettings>
+#include <QStandardPaths>
 
 #include "ForwardDeclarations.hpp"
 
@@ -22,20 +23,24 @@ namespace scl
             static QString getAutoAcceptAlias();
             static QString getShowAllAlias();
             static QString getConfidenceThresholdAlias();
+            static QString getSaveLocationAlias();
 
             bool getAutoAccept() const;
             bool getShowAll() const;
             int getConfidenceThreshold() const;
+            const QString& getSaveLocation() const;
 
         public slots:
             void setAutoAccept(bool a_state);
             void setShowAll(bool a_state);
             void setConfidenceThreshold(int a_threshold);
+            void setSaveLocation(const QString& a_location);
         
         signals:
             void autoAcceptChanged(bool a_state);
             void showAllChanged(bool a_state);
             void confidenceThresholdChanged(int a_threshold);
+            void saveLocationChanged(const QString& a_location);
         
         private:
             void load();
@@ -46,5 +51,6 @@ namespace scl
             bool auto_accept;
             bool show_all;
             int confidence_threshold;
+            QString save_location;
     };
 }

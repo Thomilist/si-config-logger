@@ -4,6 +4,8 @@
 #include <vector>
 
 #include <QString>
+#include <QStringBuilder>
+#include <QStringList>
 
 #include "ForwardDeclarations.hpp"
 
@@ -20,6 +22,8 @@ namespace scl
 
             void setData(std::vector<std::unique_ptr<OcrField>>& a_fields);
             const std::map<QString, QString>& getData() const;
+
+            const QString toCsv(std::vector<std::unique_ptr<OcrField>>& a_fields) const;
         
         private:
             std::map<QString, QString> data;

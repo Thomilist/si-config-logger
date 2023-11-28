@@ -1,4 +1,4 @@
-// Every field is defined here. Labels must be unique
+// Every field is defined here. Label + unit must be unique
 // label, bounding box, unit, regex whitelist filter, replacements
 // QString, QRect, QString, QString, std::vector<std::pair<QString, QString>>
 {

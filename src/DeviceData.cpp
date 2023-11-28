@@ -31,4 +31,21 @@ namespace scl
     {
         return data;
     }
+    
+    const QString DeviceData::toCsv(std::vector<std::unique_ptr<OcrField>>& a_fields) const
+    {
+        QStringList values;
+
+        for (auto iterator = a_fields.begin(); iterator != a_fields.end(); ++iterator)
+        {
+            values.push_back(data.at((*(iterator))->getName()));
+        }
+
+        for (auto& value : values)
+        {
+            value.replace(";", "%3B");
+        }
+
+        return values.join(";") % "\n";
+    }
 }

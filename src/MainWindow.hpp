@@ -6,9 +6,13 @@
 
 #include <QAction>
 #include <QCheckBox>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QIODevice>
 #include <QKeySequence>
 #include <QLabel>
 #include <QMainWindow>
@@ -18,7 +22,9 @@
 #include <QSpinBox>
 #include <QString>
 #include <QStringBuilder>
+#include <QStringList>
 #include <QTableView>
+#include <QTextStream>
 #include <QThread>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -56,6 +62,8 @@ namespace scl
             void createFields();
             void createControls();
             void createHistory();
+
+            void saveCsv();
 
             Settings settings;
 

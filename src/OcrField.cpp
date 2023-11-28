@@ -16,7 +16,7 @@ namespace scl
         , regex_filter(a_regex_filter)
         , replacements(a_replacements)
         , bounding_box(a_bounding_box)
-        , name(a_label)
+        , name(a_label % (a_unit.isEmpty() ? QString() : QString(" [" % a_unit % "]")))
         , label(a_label % ":")
         , unit(a_unit)
     {

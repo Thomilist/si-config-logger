@@ -21,7 +21,8 @@ namespace scl
         emit autoAcceptChanged(auto_accept);
         emit showAllChanged(show_all);
         emit confidenceThresholdChanged(confidence_threshold);
-        
+        emit saveLocationChanged(save_location);
+
         return;
     }
     
@@ -45,6 +46,11 @@ namespace scl
         return "confidence_threshold";
     }
     
+    QString Settings::getSaveLocationAlias()
+    {
+        return "save_location";
+    }
+    
     bool Settings::getAutoAccept() const
     {
         return auto_accept;
@@ -58,6 +64,11 @@ namespace scl
     int Settings::getConfidenceThreshold() const
     {
         return confidence_threshold;
+    }
+    
+    const QString& Settings::getSaveLocation() const
+    {
+        return save_location;
     }
     
     void Settings::setAutoAccept(bool a_state)
@@ -81,8 +92,18 @@ namespace scl
         return;
     }
     
+    void Settings::setSaveLocation(const QString& a_location)
+    {
+        save_location = a_location;
+        emit saveLocationChanged(save_location);
+        return;
+    }
+    
     void Settings::load()
     {
+        auto desktop_paths = QStandardPaths::standardLocations(QStandardPaths::DesktopLocation);
+        QString desktop_path = desktop_paths.isEmpty() ? "" : desktop_paths.first();
+        
         const QByteArray geometry = value(getGeometryAlias(), QByteArray()).toByteArray();
 
         if (!geometry.isEmpty())
@@ -93,6 +114,7 @@ namespace scl
         setAutoAccept(value(getAutoAcceptAlias(), false).toBool());
         setShowAll(value(getShowAllAlias(), false).toBool());
         setConfidenceThreshold(value(getConfidenceThresholdAlias(), 60).toInt());
+        setSaveLocation(value(getSaveLocationAlias(), desktop_path).toString());
 
         return;
     }
@@ -103,6 +125,7 @@ namespace scl
         setValue(getAutoAcceptAlias(), getAutoAccept());
         setValue(getShowAllAlias(), getShowAll());
         setValue(getConfidenceThresholdAlias(), getConfidenceThreshold());
+        setValue(getSaveLocationAlias(), getSaveLocation());
 
         return;
     }
